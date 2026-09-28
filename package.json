@@ -1,0 +1,17 @@
+{
+  "name": "procurebot",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5177 --host",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:ids": "node tests/check_ids.js",
+    "test": "node tests/run_all_features.js"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11",
+    "jsdom": "^25.0.1"
+  }
+}

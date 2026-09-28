@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ProcureBot – Autonomous AP Automation & 3-Way Ledger Reconciliation by QuolyTech</title>
+  <meta name="description" content="Enterprise AP automation and optical character recognition system for automated 3-way invoice matching and ERP ledger reconciliation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/procure-ui.css">
+</head>
+<body>
+
+  <!-- ====================================================================
+       FINANCIAL TELEMETRY HEADER
+       ==================================================================== -->
+  <header class="procure-header" id="procure-header">
+    <div class="brand-section" id="brand-section">
+      <div class="brand-emblem" id="brand-emblem-icon"></div>
+      <div>
+        <div class="brand-name">
+          ProcureBot <span class="badge-corp">Autonomous AP</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text-muted); font-weight: 700;">by QuolyTech Operations</div>
+      </div>
+    </div>
+
+    <!-- Live Telemetry Tickers -->
+    <div class="telemetry-strip" id="telemetry-strip">
+      <div class="ticker-item" id="ticker-stp">
+        <div class="pulse-dot"></div>
+        <span>STP Rate: <strong class="mono-font" style="color: var(--emerald-reconciled);" id="header-stp-rate">94.2%</strong></span>
+      </div>
+      <div class="ticker-item" id="ticker-savings">
+        <span>Quarter Savings: <strong class="mono-font" style="color: var(--brand-cyan);" id="header-savings-amt">$264,800</strong></span>
+      </div>
+      <div class="ticker-item" id="ticker-erp">
+        <span style="color: var(--text-muted); font-size: 12px;" id="header-erp-status">SAP & NetSuite Live Sync</span>
+      </div>
+    </div>
+
+    <!-- Header Actions (Manual Ingest + Scanner Trigger) -->
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <button class="btn-procure btn-procure-ghost" id="btn-header-custom-inv" style="padding: 10px 16px;">
+        <div id="icon-header-plus"></div>
+        <span>+ Manual Ingest</span>
+      </button>
+      <button class="btn-scan-main" id="btn-header-scan">
+        <div id="icon-header-scan"></div>
+        <span>Scan Demo</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       NAVIGATION TABS
+       ==================================================================== -->
+  <nav class="procure-nav" id="main-nav">
+    <button class="nav-tab active" id="tab-intro" data-view="view-intro">
+      <div id="icon-tab-intro"></div>
+      <span>Intro & Architecture</span>
+    </button>
+    <button class="nav-tab" id="tab-overview" data-view="view-overview">
+      <div id="icon-tab-overview"></div>
+      <span>Executive Dashboard</span>
+    </button>
+    <button class="nav-tab" id="tab-queue" data-view="view-queue">
+      <div id="icon-tab-queue"></div>
+      <span>Reconciliation Queue (<span id="queue-pending-count">5</span>)</span>
+    </button>
+    <button class="nav-tab" id="tab-studio" data-view="view-studio">
+      <div id="icon-tab-studio"></div>
+      <span>Custom Ingestion Studio</span>
+      <span class="badge-studio-live">LIVE</span>
+    </button>
+    <button class="nav-tab" id="tab-calculator" data-view="view-calculator">
+      <div id="icon-tab-calculator"></div>
+      <span>Financial ROI Calculator</span>
+    </button>
+    <button class="nav-tab" id="tab-aging" data-view="view-aging">
+      <div id="icon-tab-aging"></div>
+      <span>AP Aging & Cash Flow</span>
+    </button>
+    <button class="nav-tab" id="tab-erp" data-view="view-erp">
+      <div id="icon-tab-erp"></div>
+      <span>ERP Ledger Sync</span>
+    </button>
+  </nav>
+
+  <!-- ====================================================================
+       VIEW 0: DEDICATED INTRO PAGE & ARCHITECTURE PIPELINE
+       ==================================================================== -->
+  <main id="view-intro" class="main-content">
+    <!-- Hero Banner -->
+    <section class="intro-hero" id="intro-hero-section">
+      <div class="intro-badge-pill" id="intro-badge-pill">
+        <span class="pulse-dot"></span>
+        <span>ENTERPRISE BACK-OFFICE AUTOMATION • v4.8 by QuolyTech</span>
+      </div>
+
+      <h1 class="intro-main-title">
+        Autonomous Invoice Parsing & <br><span class="gradient-text">3-Way Ledger Reconciliation</span>
+      </h1>
+
+      <p class="intro-description">
+        Built for Operations and Finance teams. ProcureBot ingests unstructured invoices via neural optical character recognition (OCR), autonomously cross-references Purchase Orders and Goods Receipts, and posts balanced journal entries directly to SAP S/4HANA & NetSuite in 28 seconds.
+      </p>
+
+      <div class="intro-cta-row">
+        <button class="btn-procure btn-procure-cyan" id="btn-intro-launch-console" style="padding: 14px 26px; font-size: 15px;">
+          <span>Explore Live Console</span>
+        </button>
+        <button class="btn-procure btn-procure-emerald" id="btn-intro-scan" style="padding: 14px 26px; font-size: 15px;">
+          <div id="icon-intro-btn-scan"></div>
+          <span>Run OCR Laser Scanner</span>
+        </button>
+        <button class="btn-procure btn-procure-ghost" id="btn-intro-calc" style="padding: 14px 24px; font-size: 15px;">
+          <span>Calculate Company ROI</span>
+        </button>
+      </div>
+
+      <!-- Live Financial Telemetry Chips -->
+      <div style="display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;">
+        <div class="ticker-item">
+          <span>STP Rate: <strong class="mono-font" style="color: var(--emerald-reconciled);">94.2% Touchless</strong></span>
+        </div>
+        <div class="ticker-item">
+          <span>Q3 Reconciled: <strong class="mono-font" style="color: var(--brand-cyan);">$14.8M Volume</strong></span>
+        </div>
+        <div class="ticker-item">
+          <span>Processing Speed: <strong class="mono-font" style="color: var(--emerald-reconciled);">28s Cycle Time</strong></span>
+        </div>
+        <div class="ticker-item">
+          <span>Duplicate Fraud: <strong class="mono-font" style="color: var(--amber-variance);">$86.4K Blocked</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4-Step Interactive Pipeline Flow -->
+    <section class="procure-card pipeline-section" id="pipeline-section">
+      <div style="text-align: center; margin-bottom: 8px;">
+        <h2 style="font-size: 24px; font-weight: 800; color: #FFFFFF;">Autonomous Ingestion & Reconciliation Architecture</h2>
+        <p style="color: var(--text-muted); font-size: 14px;">Click any pipeline stage below to inspect technical execution parameters:</p>
+      </div>
+
+      <div class="pipeline-grid" id="pipeline-nodes-grid">
+        <div class="pipeline-card active" id="pipe-card-1" data-step="1">
+          <div class="pipeline-step-badge">Stage 01</div>
+          <div class="pipeline-step-title">Omnichannel Ingestion</div>
+          <div class="pipeline-step-desc">Ingests vendor invoices via email inbox watchers, EDI connections, Peppol gateways, and direct PDF upload.</div>
+        </div>
+
+        <div class="pipeline-card" id="pipe-card-2" data-step="2">
+          <div class="pipeline-step-badge">Stage 02</div>
+          <div class="pipeline-step-title">Neural OCR Extraction</div>
+          <div class="pipeline-step-desc">Segments document layout into bounding boxes. Extracts vendor tax IDs, line item prices, quantities, and net totals.</div>
+        </div>
+
+        <div class="pipeline-card" id="pipe-card-3" data-step="3">
+          <div class="pipeline-step-badge">Stage 03</div>
+          <div class="pipeline-step-title">3-Way Match Triage</div>
+          <div class="pipeline-step-desc">Queries ERP to cross-reference Purchase Order and Warehouse Goods Receipt. Flags unit-rate variances down to the penny.</div>
+        </div>
+
+        <div class="pipeline-card" id="pipe-card-4" data-step="4">
+          <div class="pipeline-step-badge">Stage 04</div>
+          <div class="pipeline-step-title">Autonomous ERP Posting</div>
+          <div class="pipeline-step-desc">Generates balanced General Ledger journal entries with GL cost center allocations directly in SAP, NetSuite, or Workday.</div>
+        </div>
+      </div>
+
+      <!-- Pipeline Detail Interactive Drawer -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px 24px; margin-top: 10px;" id="pipeline-detail-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <strong style="color: var(--brand-cyan); font-size: 15px;" id="pipe-detail-title">Stage 01: Omnichannel Ingestion Pipeline</strong>
+          <span class="badge-status badge-reconciled" id="pipe-detail-status">Telemetry Active</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;" id="pipe-detail-text">
+          Continuous background workers poll dedicated AP email queues (ap-invoices@company.com), sFTP servers, and REST APIs. Ingested files are validated against cryptographic SHA-256 hashes to guarantee zero duplicate submissions.
+        </p>
+      </div>
+    </section>
+
+    <!-- Interactive Live Ingestion Testing Sandbox -->
+    <section class="sample-ingestion-box" id="sample-ingestion-sandbox">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <h2 style="font-size: 22px; font-weight: 800; color: #FFFFFF;">Interactive Ingestion & Scanning Sandbox</h2>
+          <p style="color: var(--text-secondary); font-size: 14px;">Click an enterprise sample invoice below to test the laser scanner, or drop your own file:</p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-procure btn-procure-cyan" id="btn-intro-custom-inv" style="padding: 10px 16px;">
+            <div id="icon-intro-plus"></div>
+            <span>+ Open Ingestion Studio</span>
+          </button>
+          <label for="input-custom-invoice" class="btn-procure btn-procure-ghost" style="cursor: pointer;">
+            <div id="icon-upload-invoice"></div>
+            <span>Upload File (PDF / PNG)</span>
+          </label>
+          <input type="file" id="input-custom-invoice" style="display: none;" accept=".pdf,.png,.jpg,.jpeg">
+        </div>
+      </div>
+
+      <div class="sample-cards-grid">
+        <div class="sample-invoice-card" id="btn-sample-datadog">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="badge-status badge-reconciled">Flawless 3-Way Match</span>
+            <span class="mono-font" style="font-weight: 900; color: #FFFFFF;">$14,250.00</span>
+          </div>
+          <strong style="color: #FFFFFF; font-size: 15px;">Datadog Cloud Observability</strong>
+          <div style="font-size: 12px; color: var(--text-muted);">
+            PO: <span class="mono-font" style="color: var(--brand-cyan);">PO-8841</span> • Receipt: GR-1049
+          </div>
+          <div style="font-size: 11px; color: var(--emerald-reconciled); font-weight: 700; margin-top: 4px;">
+            0.00% Variance • Instant Straight-Through Posting
+          </div>
+        </div>
+
+        <div class="sample-invoice-card" id="btn-sample-dell">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="badge-status badge-variance">Price Discrepancy Flag</span>
+            <span class="mono-font" style="font-weight: 900; color: #FFFFFF;">$42,650.00</span>
+          </div>
+          <strong style="color: #FFFFFF; font-size: 15px;">Dell Technologies Servers</strong>
+          <div style="font-size: 12px; color: var(--text-muted);">
+            PO: <span class="mono-font" style="color: var(--brand-cyan);">PO-8815</span> (PO was $39,900.00)
+          </div>
+          <div style="font-size: 11px; color: var(--amber-variance); font-weight: 700; margin-top: 4px;">
+            +$2,750 Discrepancy on 64GB DDR5 RAM
+          </div>
+        </div>
+
+        <div class="sample-invoice-card" id="btn-sample-fedex">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="badge-status badge-duplicate">Duplicate Fraud Lock</span>
+            <span class="mono-font" style="font-weight: 900; color: #FFFFFF;">$3,420.50</span>
+          </div>
+          <strong style="color: #FFFFFF; font-size: 15px;">FedEx Corporate Logistics</strong>
+          <div style="font-size: 12px; color: var(--text-muted);">
+            Invoice: <span class="mono-font">FDX-90142-USA</span>
+          </div>
+          <div style="font-size: 11px; color: var(--crimson-alert); font-weight: 700; margin-top: 4px;">
+            Identical Invoice Settled on Sep 24 • Auto-Blocked
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benchmark Table: Manual AP vs ProcureBot -->
+    <section class="procure-card">
+      <h2 style="font-size: 20px; font-weight: 800; color: #FFFFFF; margin-bottom: 4px;">Operational Benchmark: Manual Accounts Payable vs. ProcureBot</h2>
+      <p style="color: var(--text-muted); font-size: 13px;">Enterprise financial analysis based on standard 2,500 monthly invoice volume:</p>
+
+      <table class="benchmark-table">
+        <thead>
+          <tr>
+            <th>Performance Metric</th>
+            <th>Traditional Manual AP</th>
+            <th>ProcureBot Autonomous Engine</th>
+            <th>Operational Impact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight: 700;">Processing Cycle Time</td>
+            <td class="mono-font" style="color: var(--text-muted);">15.4 Days Average</td>
+            <td class="mono-font" style="color: var(--emerald-reconciled); font-weight: 800;">28 Seconds</td>
+            <td style="color: var(--brand-cyan); font-weight: 700;">99.8% Speedup</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 700;">Direct Cost Per Invoice</td>
+            <td class="mono-font" style="color: var(--text-muted);">$18.40 / Invoice</td>
+            <td class="mono-font" style="color: var(--emerald-reconciled); font-weight: 800;">$1.20 / Invoice</td>
+            <td style="color: var(--emerald-reconciled); font-weight: 700;">93.5% Cost Reduction</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 700;">Touchless Straight-Through Rate (STP)</td>
+            <td class="mono-font" style="color: var(--text-muted);">0% (Every ticket entered by hand)</td>
+            <td class="mono-font" style="color: var(--emerald-reconciled); font-weight: 800;">94.2% Touchless</td>
+            <td style="color: var(--brand-cyan); font-weight: 700;">Zero Human Intervention</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 700;">Duplicate Payment Prevention</td>
+            <td class="mono-font" style="color: var(--text-muted);">Discovered in year-end audits</td>
+            <td class="mono-font" style="color: var(--emerald-reconciled); font-weight: 800;">Pre-Payment Cryptographic Lock</td>
+            <td style="color: var(--amber-variance); font-weight: 700;">$86,450 Saved / Quarter</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Enterprise Compliance & Security Strip -->
+      <div class="trust-badges-strip">
+        <div class="trust-badge-item">
+          <div id="icon-badge-soc1"></div>
+          <span>SOC1 Type II Certified</span>
+        </div>
+        <div class="trust-badge-item">
+          <div id="icon-badge-soc2"></div>
+          <span>SOC2 Type II Attested</span>
+        </div>
+        <div class="trust-badge-item">
+          <div id="icon-badge-iso"></div>
+          <span>ISO 27001 InfoSec</span>
+        </div>
+        <div class="trust-badge-item">
+          <div id="icon-badge-sap"></div>
+          <span>SAP S/4HANA Certified</span>
+        </div>
+        <div class="trust-badge-item">
+          <div id="icon-badge-netsuite"></div>
+          <span>Built for Oracle NetSuite</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ====================================================================
+       VIEW 1: EXECUTIVE DASHBOARD & CHARTS
+       ==================================================================== -->
+  <main id="view-overview" class="main-content" style="display: none;">
+    <!-- 4 KPI Telemetry Cards -->
+    <div class="kpi-row" id="kpi-summary-row">
+      <div class="procure-card kpi-metric-card" id="kpi-card-reconciled">
+        <div class="kpi-metric-header">
+          <span>Reconciled Volume (Q3)</span>
+          <div id="icon-kpi-reconciled"></div>
+        </div>
+        <div class="kpi-big-value mono-font" id="kpi-reconciled-value">$14,842,500</div>
+        <div class="kpi-subtext">
+          <span class="kpi-positive">+18.4%</span> vs prior quarter (8,420 invoices)
+        </div>
+      </div>
+
+      <div class="procure-card kpi-metric-card" id="kpi-card-stp">
+        <div class="kpi-metric-header">
+          <span>Straight-Through Rate (STP)</span>
+          <div id="icon-kpi-stp"></div>
+        </div>
+        <div class="kpi-big-value mono-font" style="color: var(--brand-cyan);" id="kpi-stp-value">94.2%</div>
+        <div class="kpi-subtext">
+          Touchless automated 3-way ledger posting
+        </div>
+      </div>
+
+      <div class="procure-card kpi-metric-card" id="kpi-card-speed">
+        <div class="kpi-metric-header">
+          <span>Processing Cycle Time</span>
+          <div id="icon-kpi-speed"></div>
+        </div>
+        <div class="kpi-big-value mono-font" style="color: var(--emerald-reconciled);" id="kpi-speed-value">28 sec</div>
+        <div class="kpi-subtext">
+          Down from 15.4 minutes manual AP entry
+        </div>
+      </div>
+
+      <div class="procure-card kpi-metric-card" id="kpi-card-duplicate">
+        <div class="kpi-metric-header">
+          <span>Duplicate Leakage Blocked</span>
+          <div id="icon-kpi-duplicate"></div>
+        </div>
+        <div class="kpi-big-value mono-font" style="color: var(--amber-variance);" id="kpi-duplicate-value">$86,450</div>
+        <div class="kpi-subtext">
+          14 duplicate invoices caught before payout
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Grid: Monthly Trend & AP Aging Schedule -->
+    <div class="charts-grid" id="charts-overview-grid">
+      <!-- Monthly Volume & STP Rate Area Chart -->
+      <div class="procure-card" id="chart-volume-card">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Invoice Processing Volume & STP Rate</h2>
+            <div class="chart-subtitle">Monthly automated straight-through invoices vs manual exceptions</div>
+          </div>
+          <div style="display: flex; gap: 12px; font-size: 12px; font-weight: 700;">
+            <span style="display: flex; align-items: center; gap: 6px; color: var(--brand-cyan);">
+              <span style="width: 10px; height: 10px; border-radius: 2px; background: var(--brand-cyan);"></span> Automated STP
+            </span>
+            <span style="display: flex; align-items: center; gap: 6px; color: var(--text-muted);">
+              <span style="width: 10px; height: 10px; border-radius: 2px; background: rgba(255,255,255,0.2);"></span> Total Volume
+            </span>
+          </div>
+        </div>
+        <div class="svg-chart-container" id="svg-volume-chart-wrapper">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+
+      <!-- AP Aging Schedule -->
+      <div class="procure-card" id="chart-aging-card">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">AP Aging Schedule</h2>
+            <div class="chart-subtitle">Outstanding accounts payable by net due date</div>
+          </div>
+        </div>
+        <div class="aging-bars-container" id="ap-aging-bars-wrapper">
+          <!-- Populated via JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Demonstration Banner -->
+    <div class="procure-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(99, 102, 241, 0.08));">
+      <div>
+        <h3 style="font-size: 18px; font-weight: 800; color: #FFFFFF; margin-bottom: 4px;">
+          Live OCR Scanner & Calculation Loading Engine
+        </h3>
+        <p style="font-size: 14px; color: var(--text-secondary); max-width: 680px;">
+          Test the holographic laser document scanner with real-time OCR token bounding box extraction and instantaneous 3-way matching against purchase orders and goods receipts.
+        </p>
+      </div>
+      <div style="display: flex; gap: 12px;">
+        <button class="btn-procure btn-procure-cyan" id="btn-banner-scan-demo">
+          <span>Launch Scanner Simulation</span>
+        </button>
+        <button class="btn-procure btn-procure-ghost" id="btn-banner-open-calc">
+          <span>Open ROI Calculator</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ====================================================================
+       VIEW 2: INVOICE RECONCILIATION QUEUE (3-WAY MATCHING)
+       ==================================================================== -->
+  <main id="view-queue" class="main-content" style="display: none;">
+    <div class="procure-card">
+      <div class="table-controls">
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <div class="search-box-procure">
+            <div id="icon-search-queue"></div>
+            <input type="text" id="input-search-queue" placeholder="Search vendor, invoice #, PO #, GL code...">
+          </div>
+          <select id="filter-queue-status" class="search-box-procure" style="width: auto; cursor: pointer;">
+            <option value="all">All Statuses (5)</option>
+            <option value="Reconciled">Reconciled (100% Match)</option>
+            <option value="Variance Flagged">Variance Flagged</option>
+            <option value="Duplicate Warning">Duplicate Warning</option>
+            <option value="Pending Review">Pending Review</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-procure btn-procure-cyan" id="btn-queue-custom-inv">
+            <div id="icon-queue-plus"></div>
+            <span>+ Ingest Custom</span>
+          </button>
+          <button class="btn-procure btn-procure-ghost" id="btn-queue-batch-5">
+            <div id="icon-queue-batch"></div>
+            <span>⚡ Generate 5 Records</span>
+          </button>
+          <button class="btn-procure btn-procure-emerald" id="btn-batch-approve">
+            <div id="icon-batch-check"></div>
+            <span>Batch Approve Matched</span>
+          </button>
+          <button class="btn-procure btn-procure-ghost" id="btn-queue-scan-new">
+            <div id="icon-queue-scan"></div>
+            <span>Scan Demo</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Invoices Queue Table -->
+      <div class="procure-table-wrapper">
+        <table class="procure-table">
+          <thead>
+            <tr>
+              <th>Vendor & Invoice</th>
+              <th>PO # & Receipt</th>
+              <th>Total Amount</th>
+              <th>Variance</th>
+              <th>OCR Conf.</th>
+              <th>Status</th>
+              <th>GL Account</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="invoices-table-body">
+            <!-- Populated via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- ====================================================================
+       VIEW: CUSTOM INGESTION STUDIO & 3-WAY MATCH LABORATORY
+       ==================================================================== -->
+  <main id="view-studio" class="main-content" style="display: none;">
+    <!-- Studio Header Banner -->
+    <div class="intro-hero" style="padding: 28px; text-align: left; margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <div class="intro-badge-pill" style="margin-bottom: 8px;">
+            <span class="pulse-dot"></span>
+            <span>INTERACTIVE AP LABORATORY • DIRECT DATA INGESTION</span>
+          </div>
+          <h1 style="font-size: 28px; font-weight: 900; color: #FFFFFF; line-height: 1.2;">
+            Custom Invoice Ingestion & <span class="gradient-text">3-Way Match Simulation Studio</span>
+          </h1>
+          <p style="color: var(--text-secondary); max-width: 780px; font-size: 14px; margin-top: 6px;">
+            Compose your own vendor invoices from scratch or with one-click enterprise personas. Test how ProcureBot's neural OCR segments line items, validates against PO contracts and Goods Receipts, and posts automated double-entry ledger entries.
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <button class="btn-procure btn-procure-emerald" id="btn-studio-randomize">
+            <div id="icon-studio-dice"></div>
+            <span>🎲 Random AI Invoice</span>
+          </button>
+          <button class="btn-procure btn-procure-cyan" id="btn-studio-batch-5">
+            <div id="icon-studio-batch"></div>
+            <span>⚡ Generate 5 Records</span>
+          </button>
+          <button class="btn-procure btn-procure-ghost" id="btn-studio-reset">
+            <span>Reset Defaults</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Enterprise Personas -->
+      <div style="margin-top: 20px;">
+        <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">
+          Quick Enterprise Vendor Personas (Click to Load):
+        </div>
+        <div class="persona-chips-bar" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">
+          <button type="button" class="persona-chip-btn active" id="chip-persona-nvidia">
+            <strong style="color: #10B981;">NV</strong>
+            <span>NVIDIA DGX ($185.0K)</span>
+          </button>
+          <button type="button" class="persona-chip-btn" id="chip-persona-openai">
+            <strong style="color: #06B6D4;">OAI</strong>
+            <span>OpenAI Compute ($24.5K)</span>
+          </button>
+          <button type="button" class="persona-chip-btn" id="chip-persona-aws">
+            <strong style="color: #F59E0B;">AWS</strong>
+            <span>AWS Cloud Infra ($36.2K)</span>
+          </button>
+          <button type="button" class="persona-chip-btn" id="chip-persona-tesla">
+            <strong style="color: #EF4444;">TSLA</strong>
+            <span>Tesla Megapack ($94.8K)</span>
+          </button>
+          <button type="button" class="persona-chip-btn" id="chip-persona-apple">
+            <strong style="color: #A855F7;">AAPL</strong>
+            <span>Apple Enterprise ($52.4K)</span>
+          </button>
+          <button type="button" class="persona-chip-btn" id="chip-persona-starlink">
+            <strong style="color: #38BDF8;">STRL</strong>
+            <span>Starlink Uplink ($14.5K)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Studio Grid (Left Input Console / Right Real-time Hologram) -->
+    <div class="studio-grid">
+      <!-- Left: Ingestion Console -->
+      <div class="procure-card" style="padding: 24px;">
+        <!-- Match Scenario Switcher -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 12px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">
+            Select 3-Way Match Simulation Scenario:
+          </div>
+          <div class="scenario-selector-row">
+            <button type="button" class="scenario-mode-btn active-clean" id="mode-scenario-clean">
+              <div style="font-size: 13px; font-weight: 800; color: var(--emerald-reconciled); display: flex; align-items: center; gap: 6px;">
+                <div id="icon-scenario-clean"></div>
+                <span>Exact Match (0%)</span>
+              </div>
+              <span style="font-size: 11px; color: var(--text-muted);">PO = GR = Invoiced (STP Ready)</span>
+            </button>
+
+            <button type="button" class="scenario-mode-btn" id="mode-scenario-variance">
+              <div style="font-size: 13px; font-weight: 800; color: var(--amber-variance); display: flex; align-items: center; gap: 6px;">
+                <div id="icon-scenario-variance"></div>
+                <span>Price Variance (+X%)</span>
+              </div>
+              <span style="font-size: 11px; color: var(--text-muted);">Overbilling discrepancy trigger</span>
+            </button>
+
+            <button type="button" class="scenario-mode-btn" id="mode-scenario-duplicate">
+              <div style="font-size: 13px; font-weight: 800; color: var(--crimson-alert); display: flex; align-items: center; gap: 6px;">
+                <div id="icon-scenario-duplicate"></div>
+                <span>Duplicate Alert</span>
+              </div>
+              <span style="font-size: 11px; color: var(--text-muted);">Re-billed invoice blocker</span>
+            </button>
+          </div>
+        </div>
+
+        <form id="form-studio-create-invoice" style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- Vendor & Invoice Info -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Vendor Legal Name</label>
+              <input type="text" id="studio-input-vendor" required class="search-box-procure" style="width: 100%;" value="NVIDIA Corporation">
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Vendor Tax ID (EIN)</label>
+              <input type="text" id="studio-input-taxid" required class="search-box-procure" style="width: 100%; font-family: 'JetBrains Mono', monospace;" value="94-3177749">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Invoice Number</label>
+              <input type="text" id="studio-input-invnum" required class="search-box-procure" style="width: 100%; font-family: 'JetBrains Mono', monospace;" value="NV-2026-9041">
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Invoice Payment Terms</label>
+              <select id="studio-select-terms" class="search-box-procure" style="width: 100%;">
+                <option value="Net 30">Net 30 Days (Standard)</option>
+                <option value="Net 15">Net 15 Days (Accelerated)</option>
+                <option value="Net 45">Net 45 Days</option>
+                <option value="Due upon Receipt">Due upon Receipt</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- PO & 3-Way Match References -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Purchase Order (PO #)</label>
+              <input type="text" id="studio-input-po" required class="search-box-procure" style="width: 100%; font-family: 'JetBrains Mono', monospace;" value="PO-8890">
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Goods Receipt (GR #)</label>
+              <input type="text" id="studio-input-gr" required class="search-box-procure" style="width: 100%; font-family: 'JetBrains Mono', monospace;" value="GR-1080">
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Approved PO Budget ($)</label>
+              <input type="number" id="studio-input-po-amt" required step="0.01" class="search-box-procure" style="width: 100%; font-family: 'JetBrains Mono', monospace;" value="185000.00">
+            </div>
+          </div>
+
+          <!-- Multi-Line Items Builder -->
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-size: 12px; font-weight: 800; color: #FFFFFF; text-transform: uppercase;">
+                Line Items Specification
+              </span>
+              <button type="button" class="btn-procure btn-procure-ghost" id="btn-studio-add-line" style="font-size: 11px; padding: 4px 10px;">
+                <div id="icon-studio-add-line"></div>
+                <span>+ Add Line Item</span>
+              </button>
+            </div>
+
+            <table class="line-items-builder-table">
+              <thead>
+                <tr>
+                  <th style="width: 48%;">Description</th>
+                  <th style="width: 16%;">Qty</th>
+                  <th style="width: 22%;">Unit Price ($)</th>
+                  <th style="width: 14%; text-align: right;">Total ($)</th>
+                  <th style="width: 30px;"></th>
+                </tr>
+              </thead>
+              <tbody id="studio-line-items-body">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+
+            <!-- Calculation Row (Tax, Freight, Net Total) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-subtle);">
+              <div>
+                <label style="font-size: 11px; color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 2px;">Sales Tax</label>
+                <select id="studio-tax-select" class="search-box-procure" style="width: 100%; padding: 4px 8px; font-size: 11px;">
+                  <option value="0">0% (Tax Exempt / CapEx)</option>
+                  <option value="5">5.00% Standard</option>
+                  <option value="8.25">8.25% CA/NY Tech</option>
+                  <option value="10">10.00% VAT</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 11px; color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 2px;">Freight / Shipping ($)</label>
+                <input type="number" id="studio-input-shipping" step="0.01" class="search-box-procure" style="width: 100%; padding: 4px 8px; font-size: 11px; font-family: 'JetBrains Mono', monospace;" value="0.00">
+              </div>
+              <div style="text-align: right; display: flex; flex-direction: column; justify-content: center;">
+                <span style="font-size: 11px; color: var(--text-muted); font-weight: 700;">Calculated Invoice Total</span>
+                <span class="mono-font" style="font-size: 16px; font-weight: 900; color: #FFFFFF;" id="studio-total-display">$185,000.00</span>
+                <input type="hidden" id="studio-input-inv-amt" value="185000.00">
+              </div>
+            </div>
+          </div>
+
+          <!-- ERP & General Ledger Config -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Target ERP System</label>
+              <select id="studio-select-erp" class="search-box-procure" style="width: 100%;">
+                <option value="SAP S/4HANA">SAP S/4HANA Enterprise</option>
+                <option value="Oracle NetSuite">Oracle NetSuite ERP</option>
+                <option value="Workday Financials">Workday Financials</option>
+                <option value="QuickBooks Enterprise">QuickBooks Enterprise</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">General Ledger Account</label>
+              <select id="studio-select-gl" class="search-box-procure" style="width: 100%;">
+                <option value="GL-1500 Capitalized AI & Server Hardware">GL-1500 Capitalized Server Hardware</option>
+                <option value="GL-6200 Cloud Telemetry & Observability">GL-6200 Cloud Compute & APIs</option>
+                <option value="GL-6210 Enterprise Data Warehouse">GL-6210 Data Warehouse</option>
+                <option value="GL-6400 General IT & Software Operations">GL-6400 General IT Operations</option>
+                <option value="GL-6500 Corporate Freight & Logistics">GL-6500 Freight & Logistics</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Ingestion Action Submit -->
+          <button type="submit" class="btn-procure btn-procure-cyan" id="btn-studio-submit" style="padding: 16px; font-size: 15px; margin-top: 8px;">
+            <div id="icon-studio-submit-laser"></div>
+            <span>⚡ Ingest Payload & Run Holographic Laser Scanner (+ Post to Ledger)</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Right: Real-time Live Holographic Twin & Variance Radar -->
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Digital Paper Invoice Mockup -->
+        <div style="position: relative;">
+          <div class="mock-invoice-paper" style="width: 100%; height: auto; padding: 24px; position: relative;" id="studio-doc-preview">
+            <!-- Holographic Security Stamp -->
+            <div class="holo-stamp holo-stamp-reconciled" id="studio-holo-stamp">
+              3-WAY MATCH VERIFIED • STP READY
+            </div>
+
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #E5E7EB; padding-bottom: 12px; margin-bottom: 14px;">
+              <div>
+                <strong style="font-size: 18px; color: #111827;" id="studio-prev-vendor">NVIDIA Corporation</strong>
+                <div style="font-size: 11px; color: #6B7280;" id="studio-prev-taxid">Tax ID: 94-3177749</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="mono-font" style="font-weight: 800; color: #0284C7; font-size: 15px;" id="studio-prev-invnum">NV-2026-9041</div>
+                <div style="font-size: 11px; color: #6B7280;" id="studio-prev-date">Date: Sep 28, 2026</div>
+              </div>
+            </div>
+
+            <!-- PO References -->
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #4B5563; margin-bottom: 14px; background: #F9FAFB; padding: 8px 12px; border-radius: 6px;">
+              <div><strong>PO Ref:</strong> <span class="mono-font" id="studio-prev-po">PO-8890</span></div>
+              <div><strong>Goods Receipt:</strong> <span class="mono-font" id="studio-prev-gr">GR-1080</span></div>
+              <div><strong>Terms:</strong> <span id="studio-prev-terms">Net 30</span></div>
+            </div>
+
+            <!-- Items Table in Paper -->
+            <div id="studio-prev-items-list" style="margin-bottom: 14px;">
+              <!-- Line items list preview -->
+            </div>
+
+            <!-- Paper Summary & Barcode -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 2px solid #E5E7EB; padding-top: 12px;">
+              <div>
+                <!-- Simulated Barcode -->
+                <div style="display: flex; gap: 2px; align-items: flex-end; height: 26px; opacity: 0.7;">
+                  <span style="width: 2px; height: 100%; background: #111827;"></span>
+                  <span style="width: 4px; height: 100%; background: #111827;"></span>
+                  <span style="width: 1px; height: 100%; background: #111827;"></span>
+                  <span style="width: 3px; height: 100%; background: #111827;"></span>
+                  <span style="width: 2px; height: 100%; background: #111827;"></span>
+                  <span style="width: 5px; height: 100%; background: #111827;"></span>
+                  <span style="width: 1px; height: 100%; background: #111827;"></span>
+                  <span style="width: 3px; height: 100%; background: #111827;"></span>
+                  <span style="width: 2px; height: 100%; background: #111827;"></span>
+                  <span style="width: 4px; height: 100%; background: #111827;"></span>
+                  <span style="width: 2px; height: 100%; background: #111827;"></span>
+                  <span style="width: 1px; height: 100%; background: #111827;"></span>
+                </div>
+                <div class="mono-font" style="font-size: 9px; color: #6B7280; margin-top: 2px;">AUTHENTICATED AP BUFFER</div>
+              </div>
+
+              <div style="text-align: right;">
+                <span style="font-size: 11px; font-weight: 700; color: #6B7280;">TOTAL PAYABLE</span>
+                <div class="mono-font" style="font-size: 20px; font-weight: 900; color: #111827;" id="studio-prev-total">$185,000.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time 3-Way Variance Radar -->
+        <div class="procure-card" style="padding: 20px;">
+          <div style="font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <span>Real-Time 3-Way Variance Radar</span>
+            <span class="mono-font" style="color: var(--brand-cyan); font-size: 11px;">TOLERANCE: $0.00</span>
+          </div>
+
+          <div id="studio-variance-radar">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Autonomous ERP Ledger Posting Preview -->
+        <div class="procure-card" style="padding: 20px;">
+          <div style="font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <span>Autonomous ERP Posting Preview</span>
+            <span class="badge-status badge-reconciled" style="font-size: 11px;">AUTO-BALANCED</span>
+          </div>
+
+          <div id="studio-gl-preview">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- ====================================================================
+       VIEW 3: FINANCIAL ROI & COST CALCULATOR
+       ==================================================================== -->
+  <main id="view-calculator" class="main-content" style="display: none;">
+    <div class="procure-card">
+      <div style="margin-bottom: 24px;">
+        <h2 style="font-size: 24px; font-weight: 900; color: #FFFFFF; margin-bottom: 6px;">
+          Financial ROI & Accounts Payable Cost Savings Calculator
+        </h2>
+        <p style="color: var(--text-secondary); font-size: 14px;">
+          Adjust your company's operational parameters to quantify immediate monthly labor savings, error reduction, and straight-through processing financial returns.
+        </p>
+      </div>
+
+      <div class="roi-calculator-layout">
+        <!-- Interactive Sliders -->
+        <div>
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <label for="slider-invoices">Monthly Invoice Volume</label>
+              <span class="mono-font" style="color: var(--brand-cyan); font-weight: 800;" id="val-slider-invoices">2,500</span>
+            </div>
+            <input type="range" id="slider-invoices" class="calc-slider" min="500" max="15000" step="250" value="2500">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted);">
+              <span>500 / mo</span>
+              <span>15,000 / mo</span>
+            </div>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <label for="slider-rate">AP Staff Fully Loaded Hourly Rate ($/hr)</label>
+              <span class="mono-font" style="color: var(--brand-cyan); font-weight: 800;" id="val-slider-rate">$45.00</span>
+            </div>
+            <input type="range" id="slider-rate" class="calc-slider" min="25" max="95" step="5" value="45">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted);">
+              <span>$25 / hr</span>
+              <span>$95 / hr</span>
+            </div>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <label for="slider-mins">Manual Minutes Per Invoice</label>
+              <span class="mono-font" style="color: var(--brand-cyan); font-weight: 800;" id="val-slider-mins">15 mins</span>
+            </div>
+            <input type="range" id="slider-mins" class="calc-slider" min="5" max="30" step="1" value="15">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted);">
+              <span>5 mins</span>
+              <span>30 mins</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculated Live Results Card -->
+        <div class="roi-results-box" id="roi-results-card">
+          <div>
+            <div style="font-size: 13px; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">
+              Projected Annual Financial Savings
+            </div>
+            <div class="roi-metric-highlight mono-font" id="calc-annual-savings">$189,000</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; border-top: 1px solid var(--border-subtle); padding-top: 16px;">
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted);">Monthly Hours Saved</div>
+              <div class="mono-font" style="font-size: 22px; font-weight: 800; color: #FFFFFF;" id="calc-hours-saved">350 hrs</div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted);">Estimated ROI</div>
+              <div class="mono-font" style="font-size: 22px; font-weight: 800; color: var(--emerald-reconciled);" id="calc-roi-multiplier">840%</div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted);">Processing Speed Gain</div>
+              <div class="mono-font" style="font-size: 22px; font-weight: 800; color: var(--brand-cyan);">30x Faster</div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted);">Duplicate Cost Avoidance</div>
+              <div class="mono-font" style="font-size: 22px; font-weight: 800; color: var(--amber-variance);" id="calc-duplicate-avoidance">$42,500</div>
+            </div>
+          </div>
+
+          <button class="btn-procure btn-procure-cyan" id="btn-export-roi-summary" style="width: 100%; margin-top: 8px;">
+            <div id="icon-calc-export"></div>
+            <span>Export Financial Business Case (PDF)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ====================================================================
+       VIEW 4: AP AGING & CASH FLOW PROJECTIONS
+       ==================================================================== -->
+  <main id="view-aging" class="main-content" style="display: none;">
+    <div class="charts-grid">
+      <!-- Spend by Category Donut -->
+      <div class="procure-card">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Quarterly Vendor Spend Distribution</h2>
+            <div class="chart-subtitle">Breakdown across corporate cost centers</div>
+          </div>
+        </div>
+        <div id="spend-donut-container" style="display: flex; align-items: center; justify-content: center; height: 260px;">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+
+      <!-- Cash Outflow Summary -->
+      <div class="procure-card">
+        <div class="chart-header">
+          <div>
+            <h2 class="chart-title">Cash-Outflow Projection</h2>
+            <div class="chart-subtitle">Projected disbursements by payment terms</div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--bg-surface); border-radius: var(--radius-md);">
+            <span>Due in Next 7 Days (Early Pay Discount):</span>
+            <strong class="mono-font" style="color: var(--emerald-reconciled);">$2,840,000</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--bg-surface); border-radius: var(--radius-md);">
+            <span>Due in 8 - 30 Days (Standard Net 30):</span>
+            <strong class="mono-font">$5,580,000</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--bg-surface); border-radius: var(--radius-md);">
+            <span>Pending Dispute / Discrepancy Holds:</span>
+            <strong class="mono-font" style="color: var(--amber-variance);">$42,650</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ====================================================================
+       VIEW 5: ERP LEDGER SYNC & GL POSTING
+       ==================================================================== -->
+  <main id="view-erp" class="main-content" style="display: none;">
+    <div class="procure-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h2 style="font-size: 22px; font-weight: 800; color: #FFFFFF;">ERP General Ledger Integration Status</h2>
+          <p style="color: var(--text-secondary); font-size: 13px;">Real-time automated posting of reconciled journal entries into enterprise ERPs.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-procure btn-procure-cyan" id="btn-sync-erp-now">
+            <div id="icon-erp-refresh"></div>
+            <span>Trigger ERP Sync Now</span>
+          </button>
+          <button class="btn-procure btn-procure-ghost" id="btn-export-gl-csv">
+            <div id="icon-erp-download"></div>
+            <span>Export Journal Entries (CSV)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ERP Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="color: #FFFFFF;">SAP S/4HANA</strong>
+            <span class="badge-status badge-reconciled">Connected</span>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Last Sync: 42s ago • 142 posted</div>
+        </div>
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="color: #FFFFFF;">Oracle NetSuite</strong>
+            <span class="badge-status badge-reconciled">Connected</span>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Last Sync: 1m ago • 89 posted</div>
+        </div>
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="color: #FFFFFF;">Workday Financials</strong>
+            <span class="badge-status badge-reconciled">Connected</span>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Last Sync: 3m ago • 34 posted</div>
+        </div>
+      </div>
+
+      <!-- GL Distribution Table Preview -->
+      <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 12px;">Automated General Ledger Allocation Map</h3>
+      <div class="procure-table-wrapper">
+        <table class="procure-table">
+          <thead>
+            <tr>
+              <th>GL Account Code</th>
+              <th>Department / Cost Center</th>
+              <th>Allocation Rule</th>
+              <th>Monthly Volume</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono-font" style="color: var(--brand-cyan);">GL-6200</td>
+              <td>Engineering • Cloud Telemetry & Observability</td>
+              <td>Auto-parse Datadog / NewRelic invoices</td>
+              <td class="mono-font">$420,000.00</td>
+              <td><span class="badge-status badge-reconciled">Active</span></td>
+            </tr>
+            <tr>
+              <td class="mono-font" style="color: var(--brand-cyan);">GL-6210</td>
+              <td>Data Platform • Snowflake Compute & Storage</td>
+              <td>Auto-parse Snowflake monthly CCU statements</td>
+              <td class="mono-font">$340,800.00</td>
+              <td><span class="badge-status badge-reconciled">Active</span></td>
+            </tr>
+            <tr>
+              <td class="mono-font" style="color: var(--brand-cyan);">GL-1500</td>
+              <td>Capital Expenditure • Server Equipment</td>
+              <td>3-Way match Dell / HP hardware against POs</td>
+              <td class="mono-font">$890,000.00</td>
+              <td><span class="badge-status badge-reconciled">Active</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- ====================================================================
+       MODAL 1: HOLOGRAPHIC OCR SCANNER & REAL-TIME LOADING SCREEN
+       ==================================================================== -->
+  <div id="modal-scanner" class="scanner-modal-backdrop" style="display: none;">
+    <div class="scanner-modal-card">
+      <!-- Modal Header -->
+      <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: #0A0F1D;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div id="icon-modal-scan-title"></div>
+          <div>
+            <h3 style="font-size: 16px; font-weight: 800; color: #FFFFFF;" id="scanner-modal-title">
+              Autonomous OCR Ingestion & 3-Way Matching Engine
+            </h3>
+            <span style="font-size: 11px; color: var(--text-cyan);">Neural Document Extraction Buffer</span>
+          </div>
+        </div>
+        <button id="btn-close-scanner" style="background: none; border: none; color: var(--text-muted); cursor: pointer;">
+          <div id="icon-close-scanner"></div>
+        </button>
+      </div>
+
+      <!-- Modal Body Split (Laser Scanner Left, Terminal Log Right) -->
+      <div class="scanner-body-split">
+        <!-- Document Preview with Cyan Laser Sweeper -->
+        <div class="doc-scan-viewport" id="doc-scan-viewport">
+          <div class="laser-beam" id="scanner-laser"></div>
+          <div class="mock-invoice-paper" id="mock-invoice-paper">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #E5E7EB; padding-bottom: 8px; margin-bottom: 10px;">
+              <div>
+                <strong style="font-size: 13px;" id="scan-doc-vendor">Datadog, Inc.</strong>
+                <div style="color: #6B7280; font-size: 10px;">Tax ID: 45-2984102</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-weight: 800; color: #0284C7;" id="scan-doc-inv-num">INV-DD-948102</div>
+                <div style="color: #6B7280; font-size: 10px;">Date: Sep 26, 2026</div>
+              </div>
+            </div>
+            <div style="font-size: 10px; color: #374151; margin-bottom: 12px;">
+              <strong>Bill To:</strong> Enterprise Accounts Payable Desk • PO Ref: <span id="scan-doc-po-ref">PO-8841</span>
+            </div>
+            <div style="background: #F3F4F6; padding: 6px; border-radius: 4px; font-size: 9px; margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                <span>Description</span>
+                <span>Amount</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                <span id="scan-doc-line-desc">Datadog Infrastructure Pro - Host Units</span>
+                <span id="scan-doc-line-amt">$11,500.00</span>
+              </div>
+            </div>
+            <div style="text-align: right; font-weight: 900; font-size: 14px; color: #111827; border-top: 1px solid #E5E7EB; padding-top: 6px;">
+              Total Due: <span id="scan-doc-total-amt">$14,250.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal Log Console -->
+        <div class="scanner-terminal-log">
+          <div>
+            <div style="font-size: 12px; font-weight: 800; color: var(--text-secondary); margin-bottom: 12px; text-transform: uppercase;">
+              Real-time Processing Telemetry
+            </div>
+            <div class="terminal-stream" id="scanner-terminal-stream">
+              <!-- Log steps inserted dynamically -->
+            </div>
+          </div>
+
+          <!-- Preset selector buttons for testing -->
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 14px; margin-top: 14px;">
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Run Demonstration Scenario:</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn-procure btn-procure-ghost" id="btn-run-preset-clean" style="font-size: 11px; padding: 6px 10px;">
+                <span>Datadog (0% Match)</span>
+              </button>
+              <button class="btn-procure btn-procure-ghost" id="btn-run-preset-variance" style="font-size: 11px; padding: 6px 10px;">
+                <span>Dell (Price Variance)</span>
+              </button>
+              <button class="btn-procure btn-procure-ghost" id="btn-run-preset-duplicate" style="font-size: 11px; padding: 6px 10px;">
+                <span>FedEx (Duplicate)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL 2: SPLIT-SCREEN 3-WAY RECONCILIATION INSPECTOR
+       ==================================================================== -->
+  <div id="modal-inspector" class="scanner-modal-backdrop" style="display: none;">
+    <div class="inspector-modal-card">
+      <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: #0A0F1D;">
+        <div>
+          <h3 style="font-size: 18px; font-weight: 900; color: #FFFFFF;" id="inspector-title">
+            3-Way Reconciliation Inspector • <span id="inspector-inv-id">INV-2026-8803</span>
+          </h3>
+          <span style="font-size: 12px; color: var(--text-secondary);" id="inspector-subtitle">
+            Dell Technologies • PO-8815 vs Goods Receipt GR-1020
+          </span>
+        </div>
+        <button id="btn-close-inspector" style="background: none; border: none; color: var(--text-muted); cursor: pointer;">
+          <div id="icon-close-inspector"></div>
+        </button>
+      </div>
+
+      <div class="inspector-split">
+        <!-- Left: Document Preview -->
+        <div style="padding: 24px; background: #0D1322; border-right: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 14px;">
+          <div style="font-size: 12px; font-weight: 800; color: var(--brand-cyan); text-transform: uppercase;">
+            Ingested OCR Document Preview
+          </div>
+          <div style="background: #FFFFFF; color: #111827; padding: 20px; border-radius: 8px; font-size: 12px;" id="inspector-doc-body">
+            <!-- Dynamic document body -->
+          </div>
+        </div>
+
+        <!-- Right: 3-Way Match Matrix -->
+        <div style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
+          <div>
+            <div style="font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;">
+              3-Way Matching Ledger Matrix
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;" id="inspector-matrix">
+              <!-- Matrix Injected -->
+            </div>
+          </div>
+
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px;" id="inspector-variance-box">
+            <!-- Variance Analysis -->
+          </div>
+
+          <!-- Actions -->
+          <div style="display: flex; gap: 12px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
+            <button class="btn-procure btn-procure-emerald" id="btn-inspector-approve" style="flex: 1;">
+              <span>Approve & Post to ERP</span>
+            </button>
+            <button class="btn-procure btn-procure-ghost" id="btn-inspector-override">
+              <span>Override Variance</span>
+            </button>
+            <button class="btn-procure btn-procure-ghost" style="color: var(--crimson-alert);" id="btn-inspector-reject">
+              <span>Reject to Vendor</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL 3: MANUAL INGESTION & 3-WAY MATCH STUDIO
+       ==================================================================== -->
+  <div id="modal-create-invoice" class="scanner-modal-backdrop" style="display: none;">
+    <div class="inspector-modal-card" style="max-width: 1160px; max-height: 92vh;">
+      <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: #0A0F1D;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div id="icon-create-modal-sparkle"></div>
+          <div>
+            <h3 style="font-size: 18px; font-weight: 900; color: #FFFFFF;">
+              Custom Invoice Ingestion & 3-Way Match Studio
+            </h3>
+            <span style="font-size: 12px; color: var(--text-cyan);">
+              Real-time OCR extraction & discrepancy calculator
+            </span>
+          </div>
+        </div>
+        <button id="btn-close-create-modal" style="background: none; border: none; color: var(--text-muted); cursor: pointer;">
+          <div id="icon-close-create-modal"></div>
+        </button>
+      </div>
+
+      <div class="inspector-split">
+        <!-- Left: High-Tech Form Input -->
+        <div style="padding: 24px; background: #0D1322; border-right: 1px solid var(--border-subtle); overflow-y: auto;">
+          <!-- Quick Presets -->
+          <div style="margin-bottom: 18px;">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">
+              Quick Enterprise Presets:
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn-procure btn-procure-ghost" id="btn-preset-nvidia" style="font-size: 11px; padding: 6px 10px;">
+                <span>NVIDIA DGX ($185K)</span>
+              </button>
+              <button type="button" class="btn-procure btn-procure-ghost" id="btn-preset-openai" style="font-size: 11px; padding: 6px 10px;">
+                <span>OpenAI Compute ($24.5K)</span>
+              </button>
+              <button type="button" class="btn-procure btn-procure-ghost" id="btn-preset-aws" style="font-size: 11px; padding: 6px 10px;">
+                <span>AWS Cloud ($36.2K)</span>
+              </button>
+            </div>
+          </div>
+
+          <form id="form-create-custom-invoice" style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Vendor Legal Name</label>
+                <input type="text" id="input-custom-vendor" required class="search-box-procure" style="width: 100%;" value="NVIDIA Corporation">
+              </div>
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Vendor Tax ID (EIN)</label>
+                <input type="text" id="input-custom-taxid" required class="search-box-procure" style="width: 100%; font-family: 'JetBrains Mono', monospace;" value="94-3177749">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Invoice Number</label>
+                <input type="text" id="input-custom-invnum" required class="search-box-procure" style="width: 100%; font-family: 'JetBrains Mono', monospace;" value="NV-2026-9041">
+              </div>
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Purchase Order (PO #)</label>
+                <input type="text" id="input-custom-po" required class="search-box-procure" style="width: 100%; font-family: 'JetBrains Mono', monospace;" value="PO-8890">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">PO Contract Amount ($)</label>
+                <input type="number" id="input-custom-po-amt" required step="0.01" class="search-box-procure" style="width: 100%; font-family: 'JetBrains Mono', monospace;" value="185000.00">
+              </div>
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Total Invoiced Amount ($)</label>
+                <input type="number" id="input-custom-inv-amt" required step="0.01" class="search-box-procure" style="width: 100%; font-family: 'JetBrains Mono', monospace;" value="185000.00">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Goods Receipt (GR #)</label>
+                <input type="text" id="input-custom-gr" required class="search-box-procure" style="width: 100%; font-family: 'JetBrains Mono', monospace;" value="GR-1080">
+              </div>
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Target ERP System</label>
+                <select id="select-custom-erp" class="search-box-procure" style="width: 100%;">
+                  <option value="SAP S/4HANA">SAP S/4HANA</option>
+                  <option value="Oracle NetSuite">Oracle NetSuite</option>
+                  <option value="Workday Financials">Workday Financials</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Line Item Description</label>
+              <input type="text" id="input-custom-item-desc" required class="search-box-procure" style="width: 100%;" value="8x NVIDIA H100 SXM5 80GB GPU Supercomputing Nodes">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Quantity</label>
+                <input type="number" id="input-custom-item-qty" required class="search-box-procure" style="width: 100%;" value="8">
+              </div>
+              <div>
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Unit Price ($)</label>
+                <input type="number" id="input-custom-item-price" required step="0.01" class="search-box-procure" style="width: 100%; font-family: 'JetBrains Mono', monospace;" value="23125.00">
+              </div>
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">General Ledger Cost Center</label>
+              <select id="select-custom-gl" class="search-box-procure" style="width: 100%;">
+                <option value="GL-1500 Capitalized AI & Server Hardware">GL-1500 Capitalized AI & Server Hardware</option>
+                <option value="GL-6200 Cloud Telemetry & Observability">GL-6200 Cloud Telemetry & Observability</option>
+                <option value="GL-6210 Enterprise Data Warehouse">GL-6210 Enterprise Data Warehouse</option>
+                <option value="GL-6400 General IT & Software Operations">GL-6400 General IT & Software Operations</option>
+                <option value="GL-6500 Corporate Freight & Logistics">GL-6500 Corporate Freight & Logistics</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn-procure btn-procure-cyan" id="btn-submit-custom-invoice" style="margin-top: 8px; padding: 14px;">
+              <div id="icon-submit-custom-sparkle"></div>
+              <span>Ingest & Run 3-Way Match (+ Post to Ledger)</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Right: Live Real-Time Document & 3-Way Match Telemetry -->
+        <div style="padding: 24px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto;">
+          <div style="font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">
+            Live Document Telemetry Preview
+          </div>
+
+          <!-- Digital Paper Mockup -->
+          <div class="mock-invoice-paper" style="width: 100%; height: auto; padding: 20px;" id="custom-doc-preview">
+            <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #E5E7EB; padding-bottom: 10px; margin-bottom: 12px;">
+              <div>
+                <strong style="font-size: 16px; color: #111827;" id="preview-vendor">NVIDIA Corporation</strong>
+                <div style="font-size: 11px; color: #6B7280;" id="preview-taxid">Tax ID: 94-3177749</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="mono-font" style="font-weight: 800; color: #0284C7; font-size: 14px;" id="preview-invnum">NV-2026-9041</div>
+                <div style="font-size: 11px; color: #6B7280;">Date: Today</div>
+              </div>
+            </div>
+
+            <div style="font-size: 11px; color: #4B5563; margin-bottom: 12px;">
+              <strong>PO Ref:</strong> <span class="mono-font" id="preview-po">PO-8890</span> • <strong>GR Ref:</strong> <span class="mono-font" id="preview-gr">GR-1080</span>
+            </div>
+
+            <div style="background: #F3F4F6; padding: 8px 12px; border-radius: 6px; font-size: 11px; margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; font-weight: 800;">
+                <span id="preview-item-desc">8x NVIDIA H100 SXM5 80GB GPU Supercomputing Nodes</span>
+                <span class="mono-font" id="preview-item-total">$185,000.00</span>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #E5E7EB; padding-top: 10px;">
+              <span style="font-size: 13px; font-weight: 800; color: #111827;">Total Amount Due:</span>
+              <span class="mono-font" style="font-size: 18px; font-weight: 900; color: #111827;" id="preview-total-due">$185,000.00</span>
+            </div>
+          </div>
+
+          <!-- Real-Time 3-Way Variance Radar -->
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px;" id="custom-variance-radar">
+            <!-- Populated via live calculations -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       GLOBAL FOOTER WITH QUOLYTECH ATTRIBUTION
+       ==================================================================== -->
+  <footer class="procure-footer" id="global-footer">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; color: #FFFFFF;">
+        <span>ProcureBot</span>
+        <span style="color: var(--text-muted);">•</span>
+        <span style="color: var(--brand-cyan);">Autonomous Operations & Finance AP System</span>
+      </div>
+      <p style="color: var(--text-secondary);">
+        Architected by <strong style="color: #FFFFFF;">QuolyTech</strong> to automate manual back-office entry and deliver direct financial ROI to enterprise operations.
+      </p>
+      <p style="color: var(--text-muted); font-size: 12px; margin-top: 2px;">
+        © 2026 QuolyTech. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Floating Toast Notifications -->
+  <div id="procure-toast-container" class="toast-container"></div>
+
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>
